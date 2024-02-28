@@ -1,10 +1,18 @@
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Stack;
 
-public class Postfix {
-    private Operaciones operaciones = new Operaciones();
+public class Postfix implements Evaluator {
+    @Override
+    public int evaluateExpression(String expression) throws Exception {
+        ArrayList<Character> elementos = new ArrayList<>();
+        for (char c : expression.toCharArray()) {
+            if (c != ' ') {
+                elementos.add(c);
+            }
+        }
 
-    public int solve(ArrayList<Character> elementos) throws Exception {
         Stack<Integer> stack = new Stack<>();
         for (char elemento : elementos) {
             if (Character.isDigit(elemento)) {
@@ -14,25 +22,34 @@ public class Postfix {
                 int operando1 = stack.pop();
                 switch (elemento) {
                     case '+':
-                        stack.push(operaciones.add(operando1, operando2));
+                        stack.push(operando1 + operando2);
                         break;
                     case '-':
-                        stack.push(operaciones.substraction(operando1, operando2));
+                        stack.push(operando1 - operando2);
                         break;
                     case '*':
-                        stack.push(operaciones.multiplication(operando1, operando2));
+                        stack.push(operando1 * operando2);
                         break;
                     case '/':
-                        stack.push(operaciones.division(operando1, operando2));
+                        stack.push(operando1 / operando2);
                         break;
                     case '%':
-                        stack.push(operaciones.residue(operando1, operando2));
+                        stack.push(operando1 % operando2);
                         break;
                     default:
-                        throw new Exception("Operación no válida: " + elemento);
+                        throw new Exception("Error: " + elemento);
                 }
             }
         }
-        return stack.pop();
+
+        int resultado = stack.pop();
+        guardarResultado(resultado);
+        return resultado;
+    }
+
+    private void guardarResultado(int resultado) throws Exception {
+        BufferedWriter writer = new BufferedWriter(new FileWriter("resultado.txt"));
+        writer.write(Integer.toString(resultado));
+        writer.close();
     }
 }

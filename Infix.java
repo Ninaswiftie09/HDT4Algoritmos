@@ -1,9 +1,9 @@
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Stack;
 
-public class Infix implements ExpressionEvaluator {
-    private Operaciones operaciones = new Operaciones();
-
+public class Infix implements Evaluator {
     @Override
     public int evaluateExpression(String expression) throws Exception {
         ArrayList<Character> elementos = convertirExpresionALista(expression);
@@ -41,7 +41,9 @@ public class Infix implements ExpressionEvaluator {
             operandos.push(realizarOperacion(operador, operando1, operando2));
         }
 
-        return operandos.pop();
+        int resultado = operandos.pop();
+        guardar(resultado);
+        return resultado;
     }
 
     private ArrayList<Character> convertirExpresionALista(String expression) {
@@ -71,17 +73,23 @@ public class Infix implements ExpressionEvaluator {
     private int realizarOperacion(char operador, int operando1, int operando2) throws Exception {
         switch (operador) {
             case '+':
-                return operaciones.add(operando1, operando2);
+                return operando1 + operando2;
             case '-':
-                return operaciones.substraction(operando1, operando2);
+                return operando1 - operando2;
             case '*':
-                return operaciones.multiplication(operando1, operando2);
+                return operando1 * operando2;
             case '/':
-                return operaciones.division(operando1, operando2);
+                return operando1 / operando2;
             case '%':
-                return operaciones.residue(operando1, operando2);
+                return operando1 % operando2;
             default:
                 throw new Exception("Operación no válida: " + operador);
         }
+    }
+
+    private void guardar(int resultado) throws Exception {
+        BufferedWriter writer = new BufferedWriter(new FileWriter("resultado.txt"));
+        writer.write(Integer.toString(resultado));
+        writer.close();
     }
 }
